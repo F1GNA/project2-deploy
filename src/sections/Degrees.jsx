@@ -22,15 +22,24 @@ export default function Degrees() {
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!degrees) return <p>Loading...</p>;
 
+  // Extract advanced certificates
+  const advancedCerts =
+    degrees.graduate?.find(
+      (d) =>
+        d.degreeName.toLowerCase().includes("advanced certificates") ||
+        d.availableCertificates
+    )?.availableCertificates || [];
+
   return (
     <section id="degrees" className="section">
       <h2>Degrees</h2>
 
-      {/*UDERGRADUATE*/}
+      {/*UNDERGRADUATE*/}
       <div className="emp-block">
         <button className="emp-header" onClick={() => toggleSection("undergrad")}>
           <h3>Undergraduate Programs</h3>
-          <span>{openSection === "undergrad" ? "▲" : "▼"}</span> {/*Found this symbols on https://symbl.cc/ they are simple and cool*/}
+          <span>{openSection === "undergrad" ? "▲" : "▼"}</span> 
+          {/* these symbols are clean and simple */}
         </button>
 
         {openSection === "undergrad" && (
@@ -40,6 +49,18 @@ export default function Degrees() {
                 <h4>{deg.title}</h4>
                 <p className="muted">{deg.degreeName.toUpperCase()}</p>
                 <p>{deg.description}</p>
+
+                {/* Show Concentrations */}
+                {deg.concentrations && deg.concentrations.length > 0 && (
+                  <>
+                    <h5>Concentrations:</h5>
+                    <ul className="emp-list">
+                      {deg.concentrations.map((c) => (
+                        <li key={c}>{c}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
               </div>
             ))}
           </div>
@@ -56,14 +77,53 @@ export default function Degrees() {
         {openSection === "graduate" && (
           <div className="emp-body">
             {degrees.graduate
-              .filter((deg) => deg.degreeName.toLowerCase() !== "graduate advanced certificates")
+              .filter(
+                (deg) =>
+                  !deg.degreeName
+                    .toLowerCase()
+                    .includes("advanced certificates")
+              )
               .map((deg) => (
                 <div key={deg.degreeName} className="degree-card">
                   <h4>{deg.title}</h4>
                   <p className="muted">{deg.degreeName.toUpperCase()}</p>
                   <p>{deg.description}</p>
+
+                  {/* Show Concentrations */}
+                  {deg.concentrations && deg.concentrations.length > 0 && (
+                    <>
+                      <h5>Concentrations:</h5>
+                      <ul className="emp-list">
+                        {deg.concentrations.map((c) => (
+                          <li key={c}>{c}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
                 </div>
               ))}
+          </div>
+        )}
+      </div>
+
+      {/* certificates */}
+      <div className="emp-block">
+        <button className="emp-header" onClick={() => toggleSection("certs")}>
+          <h3>Graduate Advanced Certificates</h3>
+          <span>{openSection === "certs" ? "▲" : "▼"}</span>
+        </button>
+
+        {openSection === "certs" && (
+          <div className="emp-body">
+            {advancedCerts.length > 0 ? (
+              <ul className="emp-list">
+                {advancedCerts.map((cert) => (
+                  <li key={cert}>{cert}</li>
+                ))}
+              </ul>
+            ) : (
+              <p>No advanced certificates found.</p>
+            )}
           </div>
         )}
       </div>

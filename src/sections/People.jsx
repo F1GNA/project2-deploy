@@ -41,6 +41,8 @@ export default function People() {
                 <img src={p.imagePath} alt={p.name} />
                 <h4>{p.name}</h4>
                 <p className="muted">{p.title}</p>
+
+                {p.tagline && <p className="muted small">{p.tagline}</p>}
               </div>
             ))}
           </div>
@@ -63,6 +65,8 @@ export default function People() {
                 <img src={p.imagePath} alt={p.name} />
                 <h4>{p.name}</h4>
                 <p className="muted">{p.title}</p>
+
+                {p.tagline && <p className="muted small">{p.tagline}</p>}
               </div>
             ))}
           </div>
@@ -78,6 +82,14 @@ export default function People() {
             <img src={selected.imagePath} alt={selected.name} className="modal-img" />
             <h3>{selected.name}</h3>
             <p>{selected.title}</p>
+
+            {selected.tagline && (
+              <p><i>"{selected.tagline}"</i></p>
+            )}
+
+            {selected.interestArea && (
+              <p><b>Interests:</b> {selected.interestArea}</p>
+            )}
 
             {selected.office && <p><b>Office:</b> {selected.office}</p>}
             {selected.phone && <p><b>Phone:</b> {selected.phone}</p>}

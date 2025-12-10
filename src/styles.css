@@ -491,6 +491,15 @@ h3 {
   color: #333;
 }
 
+.course-link {
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.course-link:hover {
+    transform: translateX(5px);
+    color: #f76902;
+}
+
 
 .coop-row {
   border-bottom: 1px solid #eee;

@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { getEmployment } from "../api/ritApi";
 
 export default function Employment() {
-  // store data
   const [emp, setEmp] = useState(null);
   const [error, setError] = useState("");
-  const [openSection, setOpenSection] = useState(null);
 
   useEffect(() => {
     getEmployment()
@@ -13,10 +11,17 @@ export default function Employment() {
       .catch(() => setError("ERROR Check console"));
   }, []);
 
-  // open/close 
-  const toggleSection = (section) => {
-    setOpenSection(openSection === section ? null : section);
-  };
+  // DataTables activation
+  useEffect(() => {
+    if (emp) {
+      setTimeout(() => {
+        if (window.$) {
+          $("#coopTable").DataTable();
+          $("#employmentTable").DataTable();
+        }
+      }, 0);
+    }
+  }, [emp]);
 
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!emp) return <p>Loading...</p>;
@@ -25,106 +30,101 @@ export default function Employment() {
     <section id="employment" className="section">
       <h2>Employment</h2>
 
-      {/* INTRO*/}
-      {emp.introduction && (
-        <div className="emp-block">
-          <button className="emp-header" onClick={() => toggleSection("intro")} >
-            <h3>{emp.introduction.title}</h3>
-            <span>{openSection === "intro" ? "▲" : "▼"}</span>
-          </button>
+      {/* INTRO */}
+      <div className="emp-block">
+        <h3>{emp.introduction.title}</h3>
+        {emp.introduction.content.map((item, i) => (
+          <p key={i}>{item.description}</p>
+        ))}
+      </div>
 
-          {/* Showing content if user clicked */}
-          {openSection === "intro" && (
-            <div className="emp-body">
-              {emp.introduction.content.map((item, i) => (
-                <p key={i}>{item.description}</p>
-              ))}
+      {/* DEGREE STATS */}
+      <div className="emp-block">
+        <h3>{emp.degreeStatistics.title}</h3>
+        <div className="stats-grid">
+          {emp.degreeStatistics.statistics.map((s, i) => (
+            <div key={i} className="stat-item">
+              <strong>{s.value}</strong>
+              <p>{s.description}</p>
             </div>
-          )}
+          ))}
         </div>
-      )}
-
-      {/* DEGREE STAT*/}
-      {emp.degreeStatistics && (
-        <div className="emp-block">
-          <button className="emp-header" onClick={() => toggleSection("stats")} >
-            <h3>{emp.degreeStatistics.title}</h3>
-            <span>{openSection === "stats" ? "▲" : "▼"}</span>
-          </button>
-
-          {openSection === "stats" && (
-            <div className="emp-body stats-grid">
-              {emp.degreeStatistics.statistics.map((stat, i) => (
-                <div key={i} className="stat-item">
-                  <strong>{stat.value}</strong>
-                  <span>{stat.description}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      </div>
 
       {/* EMPLOYERS */}
-      {emp.employers && (
-        <div className="emp-block">
-          <button className="emp-header" onClick={() => toggleSection("employers")} >
-            <h3>{emp.employers.title}</h3>
-            <span>{openSection === "employers" ? "▲" : "▼"}</span>
-          </button>
-
-          {openSection === "employers" && (
-            <div className="emp-body">
-              <ul className="emp-list">
-                {emp.employers.employerNames.map((name, i) => (
-                  <li key={i}>{name}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="emp-block">
+        <h3>{emp.employers.title}</h3>
+        <ul className="emp-list">
+          {emp.employers.employerNames.map((e, i) => (
+            <li key={i}>{e}</li>
+          ))}
+        </ul>
+      </div>
 
       {/* CAREERS */}
-      {emp.careers && (
-        <div className="emp-block">
-          <button className="emp-header" onClick={() => toggleSection("careers")} >
-            <h3>{emp.careers.title}</h3>
-            <span>{openSection === "careers" ? "▲" : "▼"}</span>
-          </button>
+      <div className="emp-block">
+        <h3>{emp.careers.title}</h3>
+        <ul className="emp-list">
+          {emp.careers.careerNames.map((c, i) => (
+            <li key={i}>{c}</li>
+          ))}
+        </ul>
+      </div>
 
-          {openSection === "careers" && (
-            <div className="emp-body">
-              <ul className="emp-list">
-                {emp.careers.careerNames.map((name, i) => (
-                  <li key={i}>{name}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+      {/* CO-OP TABLE */}
+      <div className="emp-block">
+        <h3>{emp.coopTable.title}</h3>
 
-      {/* COOP*/}
-      {emp.coopTable && (
-        <div className="emp-block">
-          <button className="emp-header" onClick={() => toggleSection("coop")}>
-            <h3>{emp.coopTable.title}</h3>
-            <span>{openSection === "coop" ? "▲" : "▼"}</span>
-          </button>
+        <table id="coopTable" className="display">
+          <thead>
+            <tr>
+              <th>Employer</th>
+              <th>Degree</th>
+              <th>City</th>
+              <th>Term</th>
+            </tr>
+          </thead>
+          <tbody>
+            {emp.coopTable.coopInformation.map((row, i) => (
+              <tr key={i}>
+                <td>{row.employer}</td>
+                <td>{row.degree}</td>
+                <td>{row.city}</td>
+                <td>{row.term}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-          {openSection === "coop" && (
-            <div className="emp-body coop-table">
-              {emp.coopTable.coopInformation.map((c, i) => (
-                <div key={i} className="coop-row">
-                  <p><strong>{c.employer}</strong> — {c.city}</p>
-                  <p>{c.degree} ({c.term})</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* EMPLOYMENT TABLE */}
+      <div className="emp-block">
+        <h3>{emp.employmentTable.title}</h3>
+
+        <table id="employmentTable" className="display">
+          <thead>
+            <tr>
+              <th>Employer</th>
+              <th>Degree</th>
+              <th>City</th>
+              <th>Job Title</th>
+              <th>Start Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {emp.employmentTable.professionalEmploymentInformation.map((row, i) => (
+              <tr key={i}>
+                <td>{row.employer}</td>
+                <td>{row.degree}</td>
+                <td>{row.city}</td>
+                <td>{row.title}</td>
+                <td>{row.startDate}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
     </section>
   );
 }
